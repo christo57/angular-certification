@@ -33,6 +33,7 @@ export class FootballService {
             if (optLeagueApi && optLeagueApi.response.length > 0) {
               return optLeagueApi.response[0].league;
             } else {
+              console.error(`no result for league ${league}`);
               return null;
             }
           })

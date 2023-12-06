@@ -1,7 +1,5 @@
 {
-    "editor.formatOnSave": true,
-    "editor.formatOnPaste": true,
-    "conventionalCommits.scopes": [
-        "init"
-    ]
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "conventionalCommits.scopes": ["init", "league"]
 }
