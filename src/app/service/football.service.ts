@@ -9,6 +9,7 @@ import {
 } from '../model/league-api.model';
 import { FootballUtilsService } from './utils/football-utils.service';
 import { CacheUtilsService } from './utils/cache-utils.service';
+import { StandingApiModel, StandingModel } from '../model/standing-api.model';
 
 @Injectable()
 export class FootballService {
@@ -44,5 +45,26 @@ export class FootballService {
       );
       return of(null);
     }
+  }
+
+  public getStandings(
+    leagueId: number,
+    year: number
+  ): Observable<StandingModel[] | null> {
+    const cacheKey = `${LocalStorageKey.STANDINGS}_${leagueId}_${year}`;
+    return this.cacheUtilsService
+      .getCacheOrResult<StandingApiModel | null>(
+        cacheKey,
+        this.footballApiService.getStandings(leagueId, year)
+      )
+      .pipe(
+        map(optStandingApi => {
+          if (optStandingApi && optStandingApi.response.length > 0) {
+            return optStandingApi.response[0].league.standings[0];
+          } else {
+            return null;
+          }
+        })
+      );
   }
 }

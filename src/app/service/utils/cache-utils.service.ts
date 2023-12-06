@@ -9,7 +9,7 @@ export class CacheUtilsService {
   ): Observable<T> {
     const cacheLeagueResult = localStorage.getItem(key);
     if (cacheLeagueResult) {
-      console.log('get res from cache');
+      console.log(`get res ${key} from cache`);
       return of(JSON.parse(cacheLeagueResult) as T);
     } else {
       console.log('get res from api service');

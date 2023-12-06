@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject} from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatTableModule } from '@angular/material/table';
 import { FootballService } from '../../service/football.service';
 import { FootballApiService } from '../../service/api/football-api.service';
-import { BehaviorSubject, mergeMap, Observable} from 'rxjs';
+import { BehaviorSubject, mergeMap, Observable, of } from 'rxjs';
 import { HttpClientModule } from '@angular/common/http';
 import { CountryEnum } from '../../enum/country.enum';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -18,6 +19,7 @@ import { LeagueApiResponseLeagueModel } from '../../model/league-api.model';
   imports: [
     CommonModule,
     MatButtonToggleModule,
+    MatTableModule,
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
@@ -38,4 +40,25 @@ export class HomeComponent {
         this.footballService.getLeagueFromCountry(this.country, this.year)
       )
     );
+  public standings$ = this.league$.pipe(
+    mergeMap(league => {
+      if (league) {
+        return this.footballService.getStandings(league.id, this.year);
+      } else {
+        return of(null);
+      }
+    })
+  );
+
+  public displayedColumns: string[] = [
+    'rank',
+    'logo',
+    'name',
+    'games',
+    'win',
+    'lose',
+    'draw',
+    'goal-difference',
+    'points',
+  ];
 }

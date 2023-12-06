@@ -1,9 +1,14 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpParams,
+} from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, catchError, of } from 'rxjs';
 import { CountryEnum } from '../../enum/country.enum';
 import { LeagueEnum } from '../../enum/league.enum';
 import { LeagueApiModel } from '../../model/league-api.model';
+import { StandingApiModel } from '../../model/standing-api.model';
 @Injectable()
 export class FootballApiService {
   private readonly httpClient = inject(HttpClient);
@@ -16,20 +21,41 @@ export class FootballApiService {
     year: number
   ): Observable<LeagueApiModel | null> {
     const finalUrl = `${this.url}/leagues`;
+    return this.getFootballApi(
+      finalUrl,
+      new HttpParams().appendAll({
+        name: leagueName,
+        country: countryName,
+        season: year,
+        current: true,
+        type: 'League',
+      })
+    );
+  }
+
+  public getStandings(
+    leagueId: number,
+    year: number
+  ): Observable<StandingApiModel | null> {
+    const finalUrl = `${this.url}/standings`;
+    return this.getFootballApi<StandingApiModel>(
+      finalUrl,
+      new HttpParams().appendAll({ league: leagueId, season: year })
+    );
+  }
+
+  private getFootballApi<T>(
+    url: string,
+    params: HttpParams
+  ): Observable<T | null> {
     return this.httpClient
-      .get<LeagueApiModel>(finalUrl, {
+      .get<T>(url, {
         headers: { 'x-rapidapi-key': this.key },
-        params: {
-          name: leagueName,
-          country: countryName,
-          season: year,
-          current: true,
-          type: 'League',
-        },
+        params,
       })
       .pipe(
         catchError((err: HttpErrorResponse) => {
-          console.error(`error when calling ${finalUrl} : ${err.message}`);
+          console.error(`error when calling ${url} : ${err.message}`);
           return of(null);
         })
       );

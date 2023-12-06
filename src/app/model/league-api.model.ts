@@ -14,7 +14,7 @@ export interface LeagueApiResponseCountryModel {
 }
 
 export interface LeagueApiResponseLeagueModel {
-  id: string;
+  id: number;
   logo: string;
   name: string;
   type: string;
