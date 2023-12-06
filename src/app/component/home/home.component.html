@@ -1,0 +1,15 @@
+<div class="container">
+  <div class="title">FOOTBALL UPDATES</div>
+  <mat-button-toggle-group
+    [(ngModel)]="country"
+    name="countriesGroupe"
+    aria-label="countries group">
+    <mat-button-toggle
+      *ngFor="let country of countries"
+      [id]="country + 'Select'"
+      [value]="country">
+      {{ country | titlecase }}
+    </mat-button-toggle>
+  </mat-button-toggle-group>
+  <button (click)="getLeague()">Get League</button>
+</div>
