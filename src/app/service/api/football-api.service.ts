@@ -9,6 +9,7 @@ import { CountryEnum } from '../../enum/country.enum';
 import { LeagueEnum } from '../../enum/league.enum';
 import { LeagueApiModel } from '../../model/league-api.model';
 import { StandingApiModel } from '../../model/standing-api.model';
+import { FixtureApiModel } from '../../model/fixture-api.model';
 @Injectable()
 export class FootballApiService {
   private readonly httpClient = inject(HttpClient);
@@ -41,6 +42,24 @@ export class FootballApiService {
     return this.getFootballApi<StandingApiModel>(
       finalUrl,
       new HttpParams().appendAll({ league: leagueId, season: year })
+    );
+  }
+
+  public getFixtures(
+    leagueId: number,
+    teamId: number,
+    year: number,
+    lastGames: number
+  ): Observable<FixtureApiModel | null> {
+    const finalUrl = `${this.url}/fixtures`;
+    return this.getFootballApi<FixtureApiModel>(
+      finalUrl,
+      new HttpParams().appendAll({
+        league: leagueId,
+        season: year,
+        team: teamId,
+        last: lastGames,
+      })
     );
   }
 

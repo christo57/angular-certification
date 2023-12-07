@@ -1,0 +1,20 @@
+<div class="container">
+  <div *ngIf="fixtures$ | async as fixtures" class="fixtures-container">
+    <div *ngFor="let fixture of fixtures" class="fixture">
+      <img [src]="fixture.teams.home.logo" alt="home team logo" />
+      <span>{{ fixture.teams.home.name }}</span>
+      <span>{{ fixture.goals.home }}</span>
+      <span>-</span>
+      <span>{{ fixture.goals.away }}</span>
+      <span>{{ fixture.teams.away.name }}</span>
+      <img [src]="fixture.teams.away.logo" alt="away team logo" />
+    </div>
+  </div>
+
+  <button mat-fab extended color="primary" (click)="back()">
+    <mat-icon>arrow_back</mat-icon>
+    Back
+  </button>
+
+  <div class="element"></div>
+</div>

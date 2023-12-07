@@ -22,7 +22,7 @@ export interface StandingModel {
   points: number;
   goalsDiff: number;
   group: string;
-  all: All;
+  all: AllModel;
 }
 
 export interface TeamModel {
@@ -31,7 +31,7 @@ export interface TeamModel {
   logo: string;
 }
 
-export interface All {
+export interface AllModel {
   played: number;
   win: number;
   draw: number;

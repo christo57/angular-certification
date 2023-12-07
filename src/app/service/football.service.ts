@@ -10,6 +10,10 @@ import {
 import { FootballUtilsService } from './utils/football-utils.service';
 import { CacheUtilsService } from './utils/cache-utils.service';
 import { StandingApiModel, StandingModel } from '../model/standing-api.model';
+import {
+  FixtureApiModel,
+  FixtureApiResponseModel,
+} from '../model/fixture-api.model';
 
 @Injectable()
 export class FootballService {
@@ -17,10 +21,10 @@ export class FootballService {
   private readonly cacheUtilsService = inject(CacheUtilsService);
 
   public getLeagueFromCountry(
-    country: CountryEnum | undefined,
+    country: CountryEnum,
     year: number
   ): Observable<LeagueApiResponseLeagueModel | null> {
-    const league = country && FootballUtilsService.countryToLeague.get(country);
+    const league = FootballUtilsService.countryToLeague.get(country);
 
     if (league) {
       const cacheKey = `${LocalStorageKey.LEAGUE}_${league}_${year}`;
@@ -40,9 +44,7 @@ export class FootballService {
           })
         );
     } else {
-      console.error(
-        `country ${country} does not exist or does not have a league associated`
-      );
+      console.error(`country ${country} does not have a league associated`);
       return of(null);
     }
   }
@@ -61,6 +63,29 @@ export class FootballService {
         map(optStandingApi => {
           if (optStandingApi && optStandingApi.response.length > 0) {
             return optStandingApi.response[0].league.standings[0];
+          } else {
+            return null;
+          }
+        })
+      );
+  }
+
+  public getFixtures(
+    leagueId: number,
+    teamId: number,
+    year: number,
+    lastGames: number
+  ): Observable<FixtureApiResponseModel[] | null> {
+    const cacheKey = `${LocalStorageKey.FIXTURES}_${leagueId}_${teamId}_${year}_${lastGames}`;
+    return this.cacheUtilsService
+      .getCacheOrResult<FixtureApiModel | null>(
+        cacheKey,
+        this.footballApiService.getFixtures(leagueId, teamId, year, lastGames)
+      )
+      .pipe(
+        map(optFixturesApi => {
+          if (optFixturesApi && optFixturesApi.response.length > 0) {
+            return optFixturesApi.response;
           } else {
             return null;
           }

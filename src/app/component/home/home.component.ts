@@ -1,15 +1,18 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import {
+  MatButtonToggleModule
+} from '@angular/material/button-toggle';
 import { MatTableModule } from '@angular/material/table';
 import { FootballService } from '../../service/football.service';
 import { FootballApiService } from '../../service/api/football-api.service';
-import { BehaviorSubject, mergeMap, Observable, of } from 'rxjs';
+import { BehaviorSubject, mergeMap, Observable, of, tap } from 'rxjs';
 import { HttpClientModule } from '@angular/common/http';
 import { CountryEnum } from '../../enum/country.enum';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CacheUtilsService } from '../../service/utils/cache-utils.service';
 import { LeagueApiResponseLeagueModel } from '../../model/league-api.model';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'home',
@@ -23,6 +26,7 @@ import { LeagueApiResponseLeagueModel } from '../../model/league-api.model';
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
+    RouterModule,
   ],
   providers: [FootballService, FootballApiService, CacheUtilsService],
 })
@@ -38,7 +42,8 @@ export class HomeComponent {
     this.countryChange$.pipe(
       mergeMap(() =>
         this.footballService.getLeagueFromCountry(this.country, this.year)
-      )
+      ),
+      tap(res => console.log('league : ', res))
     );
   public standings$ = this.league$.pipe(
     mergeMap(league => {
@@ -47,7 +52,8 @@ export class HomeComponent {
       } else {
         return of(null);
       }
-    })
+    }),
+    tap(res => console.log('standings : ', res))
   );
 
   public displayedColumns: string[] = [
