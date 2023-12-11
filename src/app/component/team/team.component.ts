@@ -3,7 +3,7 @@ import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { mergeMap, of, take, tap } from 'rxjs';
+import { map, mergeMap, of, take, tap } from 'rxjs';
 import { FootballService } from '../../service/football.service';
 import { FootballApiService } from '../../service/api/football-api.service';
 import { HttpClientModule } from '@angular/common/http';
@@ -59,9 +59,19 @@ export class TeamComponent {
     this.activatedRoute.paramMap
       .pipe(
         take(1),
-        tap(paramMap => {
+        mergeMap(paramMap => {
           const leagueId = paramMap.get('leagueId');
-          this.router.navigate([''], { queryParams: { leagueId } });
+          if (leagueId) {
+            return this.footballService
+              .getCountry(Number(leagueId))
+              .pipe(
+                map(country =>
+                  this.router.navigate([''], { queryParams: { country } })
+                )
+              );
+          } else {
+            return this.router.navigate(['']);
+          }
         })
       )
       .subscribe();

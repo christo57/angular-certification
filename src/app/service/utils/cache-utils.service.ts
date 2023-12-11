@@ -19,7 +19,12 @@ export class CacheUtilsService {
     } else {
       console.log('get res from api service');
       return result.pipe(
-        tap(result => localStorage?.setItem(key, JSON.stringify(result)))
+        tap(result => {
+          console.log('result : ', result);
+          if (result) {
+            localStorage?.setItem(key, JSON.stringify(result));
+          }
+        })
       );
     }
   }

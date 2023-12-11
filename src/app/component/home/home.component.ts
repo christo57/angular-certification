@@ -1,18 +1,22 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
-import {
-  MatButtonToggleModule
-} from '@angular/material/button-toggle';
+import { Component, OnInit, inject } from '@angular/core';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatTableModule } from '@angular/material/table';
 import { FootballService } from '../../service/football.service';
 import { FootballApiService } from '../../service/api/football-api.service';
-import { BehaviorSubject, mergeMap, Observable, of, tap } from 'rxjs';
+import { BehaviorSubject, map, mergeMap, Observable, of, tap } from 'rxjs';
 import { HttpClientModule } from '@angular/common/http';
-import { CountryEnum } from '../../enum/country.enum';
+import { CountryEnum, isCountry } from '../../enum/country.enum';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CacheUtilsService } from '../../service/utils/cache-utils.service';
 import { LeagueApiResponseLeagueModel } from '../../model/league-api.model';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
+import { StandingModel } from '../../model/standing-api.model';
+
+export interface standingsData {
+  standings: StandingModel[];
+  league: LeagueApiResponseLeagueModel;
+}
 
 @Component({
   selector: 'home',
@@ -30,31 +34,53 @@ import { RouterModule } from '@angular/router';
   ],
   providers: [FootballService, FootballApiService, CacheUtilsService],
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
+  private readonly activatedRoute = inject(ActivatedRoute);
   private readonly footballService = inject(FootballService);
   private readonly year = new Date().getFullYear();
 
-  public country = CountryEnum.FRANCE;
+  public country!: CountryEnum;
   public countries = Object.values(CountryEnum);
 
   public countryChange$ = new BehaviorSubject<null>(null);
+
   public league$: Observable<LeagueApiResponseLeagueModel | null> =
     this.countryChange$.pipe(
       mergeMap(() =>
         this.footballService.getLeagueFromCountry(this.country, this.year)
-      ),
-      tap(res => console.log('league : ', res))
+      )
     );
-  public standings$ = this.league$.pipe(
-    mergeMap(league => {
-      if (league) {
-        return this.footballService.getStandings(league.id, this.year);
-      } else {
-        return of(null);
-      }
-    }),
-    tap(res => console.log('standings : ', res))
+
+  public data$: Observable<standingsData | null> = this.league$.pipe(
+    mergeMap(league =>
+      league
+        ? this.footballService.getStandings(league.id, this.year).pipe(
+            map(standings =>
+              standings
+                ? {
+                    standings,
+                    league,
+                  }
+                : null
+            )
+          )
+        : of(null)
+    )
   );
+
+  public ngOnInit(): void {
+    this.activatedRoute.queryParamMap
+      .pipe(
+        tap(queryParamMap => {
+          const country = queryParamMap.get('country');
+          this.country =
+            country && isCountry(country)
+              ? (country as CountryEnum)
+              : CountryEnum.FRANCE;
+        })
+      )
+      .subscribe();
+  }
 
   public displayedColumns: string[] = [
     'rank',

@@ -4,16 +4,17 @@ import { FootballApiService } from './api/football-api.service';
 import { LocalStorageKey } from '../enum/local-storage-key.enum';
 import { CountryEnum } from '../enum/country.enum';
 import {
-  LeagueApiModel,
   LeagueApiResponseLeagueModel,
+  LeagueApiResponseModel,
 } from '../model/league-api.model';
 import { FootballUtilsService } from './utils/football-utils.service';
 import { CacheUtilsService } from './utils/cache-utils.service';
-import { StandingApiModel, StandingModel } from '../model/standing-api.model';
 import {
-  FixtureApiModel,
-  FixtureApiResponseModel,
-} from '../model/fixture-api.model';
+  StandingApiResponseModel,
+  StandingModel,
+} from '../model/standing-api.model';
+import { FixtureApiResponseModel } from '../model/fixture-api.model';
+import { FootballApiModel } from '../model/football-api.model';
 
 @Injectable()
 export class FootballService {
@@ -29,7 +30,7 @@ export class FootballService {
     if (league) {
       const cacheKey = `${LocalStorageKey.LEAGUE}_${league}_${year}`;
       return this.cacheUtilsService
-        .getCacheOrResult<LeagueApiModel | null>(
+        .getCacheOrResult<FootballApiModel<LeagueApiResponseModel> | null>(
           cacheKey,
           this.footballApiService.getLeague(country, league, year)
         )
@@ -55,7 +56,7 @@ export class FootballService {
   ): Observable<StandingModel[] | null> {
     const cacheKey = `${LocalStorageKey.STANDINGS}_${leagueId}_${year}`;
     return this.cacheUtilsService
-      .getCacheOrResult<StandingApiModel | null>(
+      .getCacheOrResult<FootballApiModel<StandingApiResponseModel> | null>(
         cacheKey,
         this.footballApiService.getStandings(leagueId, year)
       )
@@ -78,7 +79,7 @@ export class FootballService {
   ): Observable<FixtureApiResponseModel[] | null> {
     const cacheKey = `${LocalStorageKey.FIXTURES}_${leagueId}_${teamId}_${year}_${lastGames}`;
     return this.cacheUtilsService
-      .getCacheOrResult<FixtureApiModel | null>(
+      .getCacheOrResult<FootballApiModel<FixtureApiResponseModel> | null>(
         cacheKey,
         this.footballApiService.getFixtures(leagueId, teamId, year, lastGames)
       )
@@ -91,5 +92,11 @@ export class FootballService {
           }
         })
       );
+  }
+
+  public getCountry(
+    leagueId: number
+  ): Observable<FootballApiModel<unknown> | null> {
+    return this.footballApiService.getCountry(leagueId);
   }
 }

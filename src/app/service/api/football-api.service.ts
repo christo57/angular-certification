@@ -4,23 +4,24 @@ import {
   HttpParams,
 } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, catchError, of } from 'rxjs';
+import { Observable, catchError, map, of } from 'rxjs';
 import { CountryEnum } from '../../enum/country.enum';
 import { LeagueEnum } from '../../enum/league.enum';
-import { LeagueApiModel } from '../../model/league-api.model';
-import { StandingApiModel } from '../../model/standing-api.model';
-import { FixtureApiModel } from '../../model/fixture-api.model';
+import { FootballApiModel } from '../../model/football-api.model';
+import { LeagueApiResponseModel } from '../../model/league-api.model';
+import { StandingApiResponseModel } from '../../model/standing-api.model';
+import { FixtureApiResponseModel } from '../../model/fixture-api.model';
 @Injectable()
 export class FootballApiService {
   private readonly httpClient = inject(HttpClient);
   private readonly url = 'https://v3.football.api-sports.io';
-  private readonly key = '0652d7506d30e0ab13ced3aae4378d75';
+  private readonly key = '0b3c48908191cf4192f9ab4c309d7095';
 
   public getLeague(
     countryName: CountryEnum,
     leagueName: LeagueEnum,
     year: number
-  ): Observable<LeagueApiModel | null> {
+  ): Observable<FootballApiModel<LeagueApiResponseModel> | null> {
     const finalUrl = `${this.url}/leagues`;
     return this.getFootballApi(
       finalUrl,
@@ -37,9 +38,9 @@ export class FootballApiService {
   public getStandings(
     leagueId: number,
     year: number
-  ): Observable<StandingApiModel | null> {
+  ): Observable<FootballApiModel<StandingApiResponseModel> | null> {
     const finalUrl = `${this.url}/standings`;
-    return this.getFootballApi<StandingApiModel>(
+    return this.getFootballApi(
       finalUrl,
       new HttpParams().appendAll({ league: leagueId, season: year })
     );
@@ -50,9 +51,9 @@ export class FootballApiService {
     teamId: number,
     year: number,
     lastGames: number
-  ): Observable<FixtureApiModel | null> {
+  ): Observable<FootballApiModel<FixtureApiResponseModel> | null> {
     const finalUrl = `${this.url}/fixtures`;
-    return this.getFootballApi<FixtureApiModel>(
+    return this.getFootballApi(
       finalUrl,
       new HttpParams().appendAll({
         league: leagueId,
@@ -63,16 +64,36 @@ export class FootballApiService {
     );
   }
 
+  public getCountry(
+    leagueId: number
+  ): Observable<FootballApiModel<unknown> | null> {
+    const finalUrl = `${this.url}/???`;
+    return this.getFootballApi(
+      finalUrl,
+      new HttpParams().appendAll({
+        league: leagueId,
+      })
+    );
+  }
+
   private getFootballApi<T>(
     url: string,
     params: HttpParams
-  ): Observable<T | null> {
+  ): Observable<FootballApiModel<T> | null> {
     return this.httpClient
-      .get<T>(url, {
+      .get<FootballApiModel<T>>(url, {
         headers: { 'x-rapidapi-key': this.key },
         params,
       })
       .pipe(
+        map(res => {
+          if (res.errors.length === 0) {
+            return res;
+          } else {
+            console.error(res.errors.join(' - '));
+            return null;
+          }
+        }),
         catchError((err: HttpErrorResponse) => {
           console.error(`error when calling ${url} : ${err.message}`);
           return of(null);

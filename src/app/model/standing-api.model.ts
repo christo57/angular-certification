@@ -1,7 +1,3 @@
-export interface StandingApiModel {
-  response: StandingApiResponseModel[];
-}
-
 export interface StandingApiResponseModel {
   league: StandingApiResponseLeagueModel;
 }

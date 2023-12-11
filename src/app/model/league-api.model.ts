@@ -1,7 +1,3 @@
-export interface LeagueApiModel {
-  response: LeagueApiResponseModel[];
-}
-
 export interface LeagueApiResponseModel {
   country: LeagueApiResponseCountryModel;
   league: LeagueApiResponseLeagueModel;

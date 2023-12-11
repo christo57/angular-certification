@@ -1,10 +1,6 @@
 import { CountryEnum } from '../enum/country.enum';
 import { LeagueEnum } from '../enum/league.enum';
 
-export interface FixtureApiModel {
-  response: FixtureApiResponseModel[];
-}
-
 export interface FixtureApiResponseModel {
   league: FixtureLeagueModel;
   goals: FixtureGoalModel;
