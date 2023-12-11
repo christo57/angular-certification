@@ -15,7 +15,7 @@ import { FixtureApiResponseModel } from '../../model/fixture-api.model';
 export class FootballApiService {
   private readonly httpClient = inject(HttpClient);
   private readonly url = 'https://v3.football.api-sports.io';
-  private readonly key = '0b3c48908191cf4192f9ab4c309d7095';
+  private readonly key = 'f298cbfe43554b303b4c7498ebb1a55d';
 
   public getLeague(
     countryName: CountryEnum,
@@ -66,12 +66,12 @@ export class FootballApiService {
 
   public getCountry(
     leagueId: number
-  ): Observable<FootballApiModel<unknown> | null> {
-    const finalUrl = `${this.url}/???`;
+  ): Observable<FootballApiModel<LeagueApiResponseModel> | null> {
+    const finalUrl = `${this.url}/leagues`;
     return this.getFootballApi(
       finalUrl,
       new HttpParams().appendAll({
-        league: leagueId,
+        id: leagueId,
       })
     );
   }

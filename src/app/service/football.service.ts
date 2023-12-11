@@ -94,9 +94,15 @@ export class FootballService {
       );
   }
 
-  public getCountry(
-    leagueId: number
-  ): Observable<FootballApiModel<unknown> | null> {
-    return this.footballApiService.getCountry(leagueId);
+  public getCountry(leagueId: number): Observable<string | null> {
+    return this.footballApiService.getCountry(leagueId).pipe(
+      map(leagueApiResponse => {
+        if (leagueApiResponse && leagueApiResponse.response.length === 1) {
+          return leagueApiResponse.response[0].country.name;
+        } else {
+          return null;
+        }
+      })
+    );
   }
 }
