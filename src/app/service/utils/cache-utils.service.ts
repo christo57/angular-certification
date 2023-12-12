@@ -20,7 +20,6 @@ export class CacheUtilsService {
       console.log('get res from api service');
       return result.pipe(
         tap(result => {
-          console.log('result : ', result);
           if (result) {
             localStorage?.setItem(key, JSON.stringify(result));
           }

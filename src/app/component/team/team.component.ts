@@ -49,8 +49,6 @@ export class TeamComponent {
     tap(res => {
       if (!res) {
         this.back();
-      } else {
-        console.log('fixtures : ', res);
       }
     })
   );
@@ -62,15 +60,13 @@ export class TeamComponent {
         mergeMap(paramMap => {
           const leagueId = paramMap.get('leagueId');
           if (leagueId) {
-            return this.footballService
-              .getCountry(Number(leagueId))
-              .pipe(
-                map(country =>
-                  this.router.navigate([''], {
-                    queryParams: { country: country?.toLowerCase() },
-                  })
-                )
-              );
+            return this.footballService.getCountry(Number(leagueId)).pipe(
+              map(country =>
+                this.router.navigate([''], {
+                  queryParams: { country: country?.toLowerCase() },
+                })
+              )
+            );
           } else {
             return this.router.navigate(['']);
           }
