@@ -66,7 +66,9 @@ export class TeamComponent {
               .getCountry(Number(leagueId))
               .pipe(
                 map(country =>
-                  this.router.navigate([''], { queryParams: { country } })
+                  this.router.navigate([''], {
+                    queryParams: { country: country?.toLowerCase() },
+                  })
                 )
               );
           } else {

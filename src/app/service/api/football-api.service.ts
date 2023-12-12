@@ -15,7 +15,7 @@ import { FixtureApiResponseModel } from '../../model/fixture-api.model';
 export class FootballApiService {
   private readonly httpClient = inject(HttpClient);
   private readonly url = 'https://v3.football.api-sports.io';
-  private readonly key = 'f298cbfe43554b303b4c7498ebb1a55d';
+  private readonly key = 'd58ba97c3837f45121dcb333d9174ef4';
 
   public getLeague(
     countryName: CountryEnum,
